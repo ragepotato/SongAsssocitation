@@ -1,6 +1,7 @@
 package com.stephent.songasssocitation
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -16,6 +17,8 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+
+private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
 
 
 class SpeechToText : AppCompatActivity() {
@@ -75,9 +78,13 @@ class SpeechToText : AppCompatActivity() {
         } catch (e: NullPointerException) {
         }
 
+
+        println(GameViewModel.easyQuestionBank)
         gameViewModel.currentIndex.observe(this, Observer {
-            songWord.text = gameViewModel.currentIndex.value.toString() + " " + gameViewModel.easyQuestionBank[it]
+            songWord.text = gameViewModel.currentIndex.value.toString() + ") " + GameViewModel.easyQuestionBank[it]
         })
+
+        gameViewModel.number = intent.getIntExtra(GET_CURRENT_SCORE, 0)
 
         gameViewModel.currentIndex.value = gameViewModel.number
 
@@ -133,6 +140,7 @@ class SpeechToText : AppCompatActivity() {
     }
 
     private fun startTimer(){
+        println("-----------------STARTING TIMER-----------------")
         timeState = TimeState.Running
         timer = object : CountDownTimer(secondsRemaining*1000, 1000){
             override fun onFinish() {
@@ -194,6 +202,8 @@ class SpeechToText : AppCompatActivity() {
 
 
     fun getSpeechInput(){
+
+
         val  micIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         //val  micIntent = Intent(RecognizerIntent.ACTION_WEB_SEARCH)
         micIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Sing!")
@@ -215,13 +225,15 @@ class SpeechToText : AppCompatActivity() {
             REQUEST_CODE_SPEECH_INPUT ->{
                 if (resultCode == Activity.RESULT_OK && null != data){
                     val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+
                     //speechResult.text = result[0]
                     val answer = result[0]
-                    onTimerFinished()
+                    println("Number of words: " + answer.split(" ").toTypedArray().size)
 
-                    val intent = AnswerResult.newIntent(this@SpeechToText, answer)
+
+                    val intent = AnswerResult.newIntent(this@SpeechToText, answer, gameViewModel.number)
                     startActivity(intent)
-                    gameViewModel.currentIndex.value = ++gameViewModel.number
+
                     println(gameViewModel.currentIndex.value.toString())
                     finish()
                     //gameViewModel.currentIndex.value = ++gameViewModel.number
@@ -235,6 +247,14 @@ class SpeechToText : AppCompatActivity() {
                 }
             }
 
+        }
+    }
+
+    companion object{
+        fun newIntent(packageContext: Context,  currentScore: Int) : Intent{
+            return Intent(packageContext, SpeechToText::class.java).apply{
+                putExtra(GET_CURRENT_SCORE, currentScore)
+            }
         }
     }
 
