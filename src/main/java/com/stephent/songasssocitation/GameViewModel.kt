@@ -20,7 +20,7 @@ class GameViewModel : ViewModel() {
     }
 
     companion object{
-        val easyQuestionBank = mutableListOf<String>(
+        var easyQuestionBank = mutableListOf<String>(
             "love", "girl", "boy", "money", "like", "place", "you", "one", "face", "bad", "good", "friend", "way", "somebody", "someone"
         ).shuffled()
     }

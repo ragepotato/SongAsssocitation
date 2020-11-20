@@ -19,26 +19,28 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 
 
 
-
-private const val GET_ANSWER_FOR_SONG = "com.stephent.songassociation.answer_for_song"
+private const val GET_GUESS_FOR_SONG = "com.stephent.songassociation.guess_for_song"
+private const val GET_TITLE_FOR_SONG = "com.stephent.songassociation.title_for_song"
+private const val GET_ARTIST_FOR_SONG = "com.stephent.songassociation.artist_for_song"
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
 
-class AnswerResult : AppCompatActivity(){
+class AnswerResult : AppCompatActivity() {
 
     private lateinit var answerTextView: TextView
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_answer_result)
         answerTextView = findViewById(R.id.theSpeechResult)
-        theSpeechResult.setText(intent.getStringExtra(GET_ANSWER_FOR_SONG))
-        retrieveWebInfo()
+        theSpeechResult.setText(intent.getStringExtra(GET_GUESS_FOR_SONG))
+
+        foundSong.setText(intent.getStringExtra(GET_TITLE_FOR_SONG) + " - " + intent.getStringExtra(GET_ARTIST_FOR_SONG))
 
 
-        next_question_button.setOnClickListener{
+
+
+        next_question_button.setOnClickListener {
             var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1) + 1
             println("Current score: " + currentScore)
             val intent = SpeechToText.newIntent(this@AnswerResult, currentScore)
@@ -48,11 +50,19 @@ class AnswerResult : AppCompatActivity(){
 
     }
 
-    companion object{
+    companion object {
 
-        fun newIntent(packageContext: Context, songAnswer: String, currentScore: Int) : Intent{
-            return Intent(packageContext, AnswerResult::class.java).apply{
-                putExtra(GET_ANSWER_FOR_SONG, songAnswer)
+        fun newIntent(
+            packageContext: Context,
+            songGuess: String,
+            songTitle: String,
+            songArtist: String,
+            currentScore: Int
+        ): Intent {
+            return Intent(packageContext, AnswerResult::class.java).apply {
+                putExtra(GET_GUESS_FOR_SONG, songGuess)
+                putExtra(GET_TITLE_FOR_SONG, songTitle)
+                putExtra(GET_ARTIST_FOR_SONG, songArtist)
                 putExtra(GET_CURRENT_SCORE, currentScore)
             }
         }
@@ -60,82 +70,4 @@ class AnswerResult : AppCompatActivity(){
 
 
 
-    private fun continuePlaying(){
-        var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1)
-
-    }
-
-    private fun retrieveWebInfo(){
-        lateinit var builder : StringBuilder
-        thread{
-            // network call, so run it in the background
-
-
-            val stringLyric = intent.getStringExtra(GET_ANSWER_FOR_SONG).replace(" ", "%20").replace("'", "%27")
-            println(stringLyric)
-            println("https://www.google.com/search?q=" + stringLyric + "%20lyrics")
-            val doc =
-                Jsoup.connect("https://www.google.com/search?q=" + stringLyric + "%20lyrics" )
-                    .get()
-
-            lateinit var firstResultArtist : String
-            lateinit var firstResultSong : String
-            if (!doc.getElementsByAttributeValueContaining("class", "qrShPb kno-ecr-pt PZPZlf mfMhoc").isEmpty() ) {
-                firstResultSong = doc.getElementsByAttributeValueContaining(
-                    "class",
-                    "qrShPb kno-ecr-pt PZPZlf mfMhoc"
-                ).first().text()
-                println(firstResultSong)
-                firstResultArtist =
-                    doc.getElementsByAttributeValueContaining("class", "wwUB2c PZPZlf").first()
-                        .text()
-                println(firstResultSong + " - " + firstResultArtist)
-
-            }
-            else if(!doc.getElementsByAttributeValueContaining("class", "LC20lb DKV0Md").isEmpty()){
-                val firstResultLink = doc.getElementsByAttributeValueContaining("class", "LC20lb DKV0Md").first().text()
-
-                firstResultArtist = firstResultLink.split(" – ").toTypedArray()[0]
-                firstResultSong = firstResultLink.split(" – ").toTypedArray()[1].split(" Lyrics").toTypedArray()[0]
-
-                println(firstResultArtist)
-                println(firstResultSong)
-
-//                println(firstResultFixed[2])
-            }
-//            val firstResult = doc.getElementsByAttributeValueContaining("class", "lyric-meta within-lyrics").first()
-//
-//
-//            val textSong = firstResult.getElementsByClass("lyric-meta-title").select("a").text()
-//
-//            var textArtist = ""
-//            if (!firstResult.getElementsByAttributeValueContaining("class", "lyric-meta-artists").isEmpty()){
-//                textArtist = firstResult.getElementsByClass("lyric-meta-artists").select("a").text()
-//
-//            }
-//            else if (!firstResult.getElementsByAttributeValueContaining("class", "lyric-meta-album-artist").isEmpty()){
-//                textArtist = firstResult.getElementsByClass("lyric-meta-album-artist").select("a").text()
-//            }
-//            else{
-//                textArtist = "unknown"
-//            }
-
-
-
-
-
-
-            //val textElements = doc.text()
-
-            //val imageUrl = imageElements[0].absUrl("src")
-
-            // can't access UI elements from the background thread
-            this.runOnUiThread{
-                //foundSong.setText(textElements[0].text())
-                foundSong.text = firstResultSong + " - " + firstResultArtist
-                //Picasso.get().load(imageUrl).into(imgTitle)
-
-            }
-        }
-    }
 }

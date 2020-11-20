@@ -17,6 +17,10 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.activity_answer_result.*
+import org.jsoup.Jsoup
+import java.lang.StringBuilder
+import kotlin.concurrent.thread
 
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
 
@@ -25,9 +29,7 @@ class SpeechToText : AppCompatActivity() {
     lateinit var gameViewModel: GameViewModel
 
 
-
-
-    enum class TimeState{
+    enum class TimeState {
         Stopped, Paused, Running
     }
 
@@ -40,7 +42,6 @@ class SpeechToText : AppCompatActivity() {
     private var secondsRemaining = 0L
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ingame)
@@ -49,7 +50,7 @@ class SpeechToText : AppCompatActivity() {
 
 
 
-        button_start.setOnClickListener{ v->
+        button_start.setOnClickListener { v ->
             startTimer()
             timeState = TimeState.Running
             updateButtons()
@@ -70,7 +71,7 @@ class SpeechToText : AppCompatActivity() {
         }
 
 
-        microphoneImage.setOnClickListener{
+        microphoneImage.setOnClickListener {
             getSpeechInput()
         }
         try {
@@ -81,7 +82,8 @@ class SpeechToText : AppCompatActivity() {
 
         println(GameViewModel.easyQuestionBank)
         gameViewModel.currentIndex.observe(this, Observer {
-            songWord.text = gameViewModel.currentIndex.value.toString() + ") " + GameViewModel.easyQuestionBank[it]
+            songWord.text = GameViewModel.easyQuestionBank[it]
+            currentScoreView.text = "Score: " + gameViewModel.currentIndex.value.toString()
         })
 
         gameViewModel.number = intent.getIntExtra(GET_CURRENT_SCORE, 0)
@@ -91,28 +93,28 @@ class SpeechToText : AppCompatActivity() {
 
     }
 
-    override fun onResume(){
+    override fun onResume() {
         super.onResume()
         initTimer()
         //TODO: remove background timer
     }
 
-    override fun onPause(){
+    override fun onPause() {
         super.onPause()
-        if (timeState == TimeState.Running){
+        if (timeState == TimeState.Running) {
             timer.cancel()
-        }
-        else if (timeState == TimeState.Paused){
+        } else if (timeState == TimeState.Paused) {
 
         }
-        TimerPreferences.setPreviousTimerLengthSeconds(timeSeconds, this)
-        TimerPreferences.setSecondsRemaining(secondsRemaining, this)
-        TimerPreferences.setTimeState(timeState, this)
+        //TimerPreferences.setPreviousTimerLengthSeconds(timeSeconds, this)
+        //TimerPreferences.setSecondsRemaining(secondsRemaining, this)
+        //TimerPreferences.setTimeState(timeState, this)
 
     }
 
-    private fun initTimer(){
-        timeState = TimerPreferences.getTimeState(this)
+    private fun initTimer() {
+        //timeState = TimerPreferences.getTimeState(this)
+
         if (timeState == TimeState.Stopped)
             setNewTimerLength()
         else
@@ -128,7 +130,7 @@ class SpeechToText : AppCompatActivity() {
 
     }
 
-    private fun onTimerFinished(){
+    private fun onTimerFinished() {
         timeState = TimeState.Stopped
         setNewTimerLength()
         progress_countdown.progress = 0
@@ -139,10 +141,10 @@ class SpeechToText : AppCompatActivity() {
         updateCountdown()
     }
 
-    private fun startTimer(){
+    private fun startTimer() {
         println("-----------------STARTING TIMER-----------------")
         timeState = TimeState.Running
-        timer = object : CountDownTimer(secondsRemaining*1000, 1000){
+        timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
             override fun onFinish() {
                 onTimerFinished()
             }
@@ -156,19 +158,19 @@ class SpeechToText : AppCompatActivity() {
         }.start()
     }
 
-    private fun setNewTimerLength(){
+    private fun setNewTimerLength() {
         val lengthInMinutes = TimerPreferences.getTimerLength(this)
         timeSeconds = (lengthInMinutes * 60L)
         progress_countdown.max = timeSeconds.toInt()
     }
 
-    private fun setPreviousTimeLength(){
+    private fun setPreviousTimeLength() {
         timeSeconds = TimerPreferences.getPreviousTimerLengthSeconds(this)
         progress_countdown.max = timeSeconds.toInt()
     }
 
 
-    private fun updateCountdown(){
+    private fun updateCountdown() {
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
         val secondsStr = secondsInMinuteUntilFinished.toString()
@@ -180,8 +182,8 @@ class SpeechToText : AppCompatActivity() {
 
     }
 
-    private fun updateButtons(){
-        when (timeState){
+    private fun updateButtons() {
+        when (timeState) {
             TimeState.Running -> {
                 button_start.isEnabled = false
                 button_pause.isEnabled = true
@@ -201,48 +203,177 @@ class SpeechToText : AppCompatActivity() {
     }
 
 
-    fun getSpeechInput(){
+    fun getSpeechInput() {
 
 
-        val  micIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        val micIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         //val  micIntent = Intent(RecognizerIntent.ACTION_WEB_SEARCH)
         micIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Sing!")
-        micIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        try{
+        micIntent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        try {
             startActivityForResult(micIntent, REQUEST_CODE_SPEECH_INPUT)
 
 
-
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode){
-            REQUEST_CODE_SPEECH_INPUT ->{
-                if (resultCode == Activity.RESULT_OK && null != data){
+        when (requestCode) {
+            REQUEST_CODE_SPEECH_INPUT -> {
+                if (resultCode == Activity.RESULT_OK && null != data) {
                     val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
 
                     //speechResult.text = result[0]
                     val answer = result[0]
-                    println("Number of words: " + answer.split(" ").toTypedArray().size)
 
 
-                    val intent = AnswerResult.newIntent(this@SpeechToText, answer, gameViewModel.number)
-                    startActivity(intent)
 
-                    println(gameViewModel.currentIndex.value.toString())
-                    finish()
-                    //gameViewModel.currentIndex.value = ++gameViewModel.number
+                    if (answer.contains(songWord.text, ignoreCase = true)){
+                        if(answer.split(" ").toTypedArray().size > 5){
 
-                }
-                else if (resultCode != Activity.RESULT_OK ){
+
+                        thread {
+                            // network call, so run it in the background
+                            println(answer)
+
+                            val stringLyric =
+                                answer.replace(" ", "%20").replace("'", "%27")
+                            println(stringLyric)
+                            println("https://www.google.com/search?q=" + stringLyric + "%20genius%20lyrics")
+                            val doc =
+                                Jsoup.connect("https://www.google.com/search?q=" + stringLyric + "%20genius%20lyrics")
+                                    .get()
+
+                            lateinit var firstResultArtist: String
+                            lateinit var firstResultSong: String
+//                        if (!doc.getElementsByAttributeValueContaining(
+//                                "class",
+//                                "qrShPb kno-ecr-pt PZPZlf mfMhoc"
+//                            ).isEmpty()
+//                        ) {
+//                            firstResultSong = doc.getElementsByAttributeValueContaining(
+//                                "class",
+//                                "qrShPb kno-ecr-pt PZPZlf mfMhoc"
+//                            ).first().text()
+//                            println(firstResultSong)
+//                            firstResultArtist =
+//                                doc.getElementsByAttributeValueContaining("class", "wwUB2c PZPZlf")
+//                                    .first()
+//                                    .text()
+//                            println(firstResultSong + " - " + firstResultArtist)
+//                            val intent = AnswerResult.newIntent(
+//                                this@SpeechToText,
+//                                answer,
+//                                firstResultSong,
+//                                firstResultArtist,
+//                                gameViewModel.number
+//                            )
+//                            startActivity(intent)
+//
+//                            println(gameViewModel.currentIndex.value.toString())
+//                            finish()
+//                        } else
+                            if (!doc.getElementsByAttributeValueContaining(
+                                    "class",
+                                    "LC20lb DKV0Md"
+                                ).isEmpty()
+                            ) {
+                                val firstResultLink =
+                                    doc.getElementsByAttributeValueContaining("class", "LC20lb DKV0Md")
+                                        .first()
+                                        .text()
+
+                                println(firstResultLink)
+
+                                if (firstResultLink.split(" – ").toTypedArray().size <=1){
+                                    firstResultArtist = ""
+                                    println("firstResultArtist: " + firstResultArtist)
+
+                                    println(firstResultLink.split(" – ").toTypedArray().size)
+                                    firstResultSong =
+                                        firstResultLink.split(" – ").toTypedArray()[0].split(" Lyrics").toTypedArray()[0]
+
+                                    println(firstResultArtist)
+                                    println(firstResultSong)
+                                }
+                                else {
+                                    firstResultArtist = firstResultLink.split(" – ").toTypedArray()[0]
+                                    println("firstResultArtist: " + firstResultArtist)
+
+                                    println(firstResultLink.split(" – ").toTypedArray().size)
+                                    firstResultSong =
+                                        firstResultLink.split(" – ").toTypedArray()[1].split(" Lyrics").toTypedArray()[0]
+
+                                    println(firstResultArtist)
+                                    println(firstResultSong)
+                                }
+
+
+                                val intent = AnswerResult.newIntent(
+                                    this@SpeechToText,
+                                    answer,
+                                    firstResultSong,
+                                    firstResultArtist,
+                                    gameViewModel.number
+                                )
+                                startActivity(intent)
+
+                                println(gameViewModel.currentIndex.value.toString())
+                                finish()
+                                // can't access UI elements from the background thread
+
+                            }
+
+                            else{
+                                //song doesn't exist
+                                val intent = EndGame.newIntent(
+                                    this@SpeechToText,
+                                    "Song doesn't exist",
+                                    gameViewModel.number
+                                )
+                                startActivity(intent)
+                                finish()
+                            }
+                        }
+
+
+
+                        }
+                        else{
+                            //not long enough
+                            val intent = EndGame.newIntent(
+                                this@SpeechToText,
+                                "Not enough words",
+                                gameViewModel.number
+                            )
+                            startActivity(intent)
+                            finish()
+                        }
+
+                    }
+                    else{
+                        //song doesn't use word
+                        val intent = EndGame.newIntent(
+                            this@SpeechToText,
+                            "Didn't use needed word",
+                            gameViewModel.number
+                        )
+                        startActivity(intent)
+                        finish()
+                    }
+
+
+
+
+                } else if (resultCode != Activity.RESULT_OK) {
                     //speechResult.text = "nullFail"
-                }
-                else{
+                } else {
                     //speechResult.text = "failed"
                 }
             }
@@ -250,9 +381,10 @@ class SpeechToText : AppCompatActivity() {
         }
     }
 
-    companion object{
-        fun newIntent(packageContext: Context,  currentScore: Int) : Intent{
-            return Intent(packageContext, SpeechToText::class.java).apply{
+
+    companion object {
+        fun newIntent(packageContext: Context, currentScore: Int): Intent {
+            return Intent(packageContext, SpeechToText::class.java).apply {
                 putExtra(GET_CURRENT_SCORE, currentScore)
             }
         }
