@@ -15,31 +15,32 @@ import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_answer_result.*
 import org.jsoup.Jsoup
 import java.lang.StringBuilder
+import java.util.*
 import kotlin.concurrent.thread
 
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
 
 
 class SpeechToText : AppCompatActivity() {
-    lateinit var gameViewModel: GameViewModel
+    private val START_TIME : Long = 30000
+    private lateinit var gameViewModel: GameViewModel
+    private lateinit var textviewCountdown : TextView
+    //private lateinit var buttonStartPause : Button
+    //private lateinit var buttonReset : Button
 
-
-    enum class TimeState {
-        Stopped, Paused, Running
-    }
+    private lateinit var countDownTimer: CountDownTimer
+    private var timerRunning: Boolean = false
+    private var timeLeftInMillis : Long = START_TIME
 
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
-    private lateinit var timer: CountDownTimer
-    private var timeState = TimeState.Stopped
-    private var timeSeconds = 0L
 
-    private var secondsRemaining = 0L
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,28 +49,35 @@ class SpeechToText : AppCompatActivity() {
 
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
 
+        textviewCountdown = findViewById(R.id.timer_countdown)
+//        buttonStartPause = findViewById(R.id.button_start)
+//        buttonReset = findViewById(R.id.button_stop)
 
 
-        button_start.setOnClickListener { v ->
-            startTimer()
-            timeState = TimeState.Running
-            updateButtons()
+        progress_countdown.max = (START_TIME/1000).toInt()
 
-        }
 
-        button_pause.setOnClickListener { v ->
-            timer.cancel()
-            timeState = TimeState.Paused
-            updateButtons()
+        startTimer()
 
-        }
+//        buttonStartPause.setOnClickListener { v ->
+//            if (timerRunning){
+//                pauseTimer()
+//            }
+//            else{
+//                startTimer()
+//            }
+//
+//        }
 
-        button_stop.setOnClickListener { v ->
-            timer.cancel()
-            onTimerFinished()
 
-        }
 
+
+
+//        buttonReset.setOnClickListener { v ->
+//            resetTimer()
+//        }
+
+        updateCountdown()
 
         microphoneImage.setOnClickListener {
             getSpeechInput()
@@ -93,114 +101,87 @@ class SpeechToText : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        initTimer()
-        //TODO: remove background timer
-    }
 
-    override fun onPause() {
-        super.onPause()
-        if (timeState == TimeState.Running) {
-            timer.cancel()
-        } else if (timeState == TimeState.Paused) {
-
-        }
-        //TimerPreferences.setPreviousTimerLengthSeconds(timeSeconds, this)
-        //TimerPreferences.setSecondsRemaining(secondsRemaining, this)
-        //TimerPreferences.setTimeState(timeState, this)
-
-    }
-
-    private fun initTimer() {
-        //timeState = TimerPreferences.getTimeState(this)
-
-        if (timeState == TimeState.Stopped)
-            setNewTimerLength()
-        else
-            setPreviousTimeLength()
-        secondsRemaining = if (timeState == TimeState.Running || timeState == TimeState.Paused)
-            TimerPreferences.getSecondsRemaining(this)
-        else
-            timeSeconds
-        if (timeState == TimeState.Running)
-            startTimer()
-        updateButtons()
-        updateCountdown()
-
-    }
-
-    private fun onTimerFinished() {
-        timeState = TimeState.Stopped
-        setNewTimerLength()
-        progress_countdown.progress = 0
-        TimerPreferences.setSecondsRemaining(timeSeconds, this)
-        secondsRemaining = timeSeconds
-
-        updateButtons()
-        updateCountdown()
-    }
-
-    private fun startTimer() {
-        println("-----------------STARTING TIMER-----------------")
-        timeState = TimeState.Running
-        timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
-            override fun onFinish() {
-                onTimerFinished()
-            }
+    private fun startTimer(){
+        countDownTimer  = object: CountDownTimer(timeLeftInMillis, 1000){
 
             override fun onTick(millisUntilFinished: Long) {
-                secondsRemaining = millisUntilFinished / 1000
+               timeLeftInMillis = millisUntilFinished
                 updateCountdown()
+            }
+            override fun onFinish() {
+                println("----------ENDING TIME-----------")
+                timerRunning = false
+
+
             }
 
 
         }.start()
+        timerRunning = true
+//        buttonStartPause.setText("Pause")
+//        buttonReset.isEnabled = false
     }
 
-    private fun setNewTimerLength() {
-        val lengthInMinutes = TimerPreferences.getTimerLength(this)
-        timeSeconds = (lengthInMinutes * 60L)
-        progress_countdown.max = timeSeconds.toInt()
+    private fun pauseTimer(){
+        countDownTimer.cancel()
+        timerRunning = false
+//        buttonStartPause.setText("Start")
+//        buttonReset.isEnabled = true
     }
 
-    private fun setPreviousTimeLength() {
-        timeSeconds = TimerPreferences.getPreviousTimerLengthSeconds(this)
-        progress_countdown.max = timeSeconds.toInt()
+    private fun resetTimer(){
+        timeLeftInMillis = START_TIME
+        updateCountdown()
+//        buttonReset.isEnabled = false
+//        buttonStartPause.isEnabled = true
+        progress_countdown.progress = 0
+        progress_countdown.max = (START_TIME/1000).toInt()
+        val intent = EndGame.newIntent(
+            this@SpeechToText,
+            "Time ran out",
+            gameViewModel.number
+        )
+        startActivity(intent)
+        finish()
+
     }
 
 
     private fun updateCountdown() {
-        val minutesUntilFinished = secondsRemaining / 60
-        val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
-        val secondsStr = secondsInMinuteUntilFinished.toString()
-        timer_countdown.text = "$minutesUntilFinished:${
-        if (secondsStr.length == 2) secondsStr
-        else "0" + secondsStr}"
-        progress_countdown.progress = (timeSeconds - secondsRemaining).toInt()
+        val minutesLeft = (timeLeftInMillis / 1000) / 60
+        val secondsLeft = (timeLeftInMillis / 1000) % 60
+        //val secondsStr = secondsInMinuteUntilFinished.toString()
+//        timer_countdown.text = "$minutesUntilFinished:${
+//        if (secondsStr.length == 2) secondsStr
+//        else "0" + secondsStr}"
+        textviewCountdown.setText(String.format(Locale.getDefault(), "%02d:%02d", minutesLeft, secondsLeft))
+        println("Start time: " + START_TIME + " timeLeftInMillis: " + (START_TIME - timeLeftInMillis) + " secondsLeft: " + secondsLeft)
+        progress_countdown.progress = ((START_TIME/1000) - secondsLeft).toInt()
+
 
 
     }
 
-    private fun updateButtons() {
-        when (timeState) {
-            TimeState.Running -> {
-                button_start.isEnabled = false
-                button_pause.isEnabled = true
-                button_stop.isEnabled = true
-            }
-            TimeState.Stopped -> {
-                button_start.isEnabled = true
-                button_pause.isEnabled = false
-                button_stop.isEnabled = false
-            }
-            TimeState.Paused -> {
-                button_start.isEnabled = true
-                button_pause.isEnabled = false
-                button_stop.isEnabled = true
-            }
-        }
-    }
+//    private fun updateButtons() {
+//        when (timeState) {
+//            TimeState.Running -> {
+//                button_start.isEnabled = false
+//                button_pause.isEnabled = true
+//                button_stop.isEnabled = true
+//            }
+//            TimeState.Stopped -> {
+//                button_start.isEnabled = true
+//                button_pause.isEnabled = false
+//                button_stop.isEnabled = false
+//            }
+//            TimeState.Paused -> {
+//                button_start.isEnabled = true
+//                button_pause.isEnabled = false
+//                button_stop.isEnabled = true
+//            }
+//        }
+//    }
 
 
     fun getSpeechInput() {
@@ -227,6 +208,7 @@ class SpeechToText : AppCompatActivity() {
         when (requestCode) {
             REQUEST_CODE_SPEECH_INPUT -> {
                 if (resultCode == Activity.RESULT_OK && null != data) {
+                    pauseTimer()
                     val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
 
                     //speechResult.text = result[0]
@@ -391,3 +373,5 @@ class SpeechToText : AppCompatActivity() {
     }
 
 }
+
+

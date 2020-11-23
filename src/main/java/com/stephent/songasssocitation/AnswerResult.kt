@@ -32,10 +32,14 @@ class AnswerResult : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_answer_result)
-        answerTextView = findViewById(R.id.theSpeechResult)
-        theSpeechResult.setText(intent.getStringExtra(GET_GUESS_FOR_SONG))
 
-        foundSong.setText(intent.getStringExtra(GET_TITLE_FOR_SONG) + " - " + intent.getStringExtra(GET_ARTIST_FOR_SONG))
+
+//        answerTextView = findViewById(R.id.theSpeechResult)
+//        theSpeechResult.setText(intent.getStringExtra(GET_GUESS_FOR_SONG))
+
+        foundSong.setText(intent.getStringExtra(GET_TITLE_FOR_SONG))
+
+        foundArtist.setText(intent.getStringExtra(GET_ARTIST_FOR_SONG))
 
 
 

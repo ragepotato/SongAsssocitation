@@ -4,25 +4,83 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".MainActivity">
 
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Hello World!"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        app:layout_constraintRight_toRightOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Hello World!"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--        app:layout_constraintRight_toRightOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
     <Button
         android:id="@+id/true_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-
+        android:background="@drawable/bgpurple"
+        android:text="New Game"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <RadioGroup
+        android:id="@+id/toggleGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/true_button">
+
+        <ToggleButton
+            android:id="@+id/easy_button"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_margin="3dp"
+
+            android:checked="true"
+            android:textOn="EASY"
+            android:textOff="EASY"
+            android:onClick="onToggle"
+            android:textSize="18dp" />
+
+        <ToggleButton
+            android:id="@+id/medium_button"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_margin="3dp"
+
+            android:onClick="onToggle"
+            android:textOn="MEDIUM"
+            android:textOff="MEDIUM"
+            android:textSize="18dp" />
+
+        <ToggleButton
+            android:id="@+id/hard_button"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_margin="3dp"
+
+            android:onClick="onToggle"
+            android:textOn="HARD"
+            android:textOff="HARD"
+            android:textSize="18dp" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/difficulty_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:fontFamily="@font/fredokaone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toggleGroup" />
 </androidx.constraintlayout.widget.ConstraintLayout>
