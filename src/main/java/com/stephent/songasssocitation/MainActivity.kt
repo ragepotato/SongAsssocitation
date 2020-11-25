@@ -17,6 +17,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.ToggleButton
 import android.widget.RadioGroup
 import androidx.core.text.HtmlCompat
+import com.google.gson.GsonBuilder
+import okhttp3.*
+import java.io.IOException
 
 
 const val EXTRA_MESSAGE = 2001
@@ -37,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         val toggleButton =  findViewById<RadioGroup>(R.id.toggleGroup)
         mediumButton.setTextColor(Color.GRAY)
         hardButton.setTextColor(Color.GRAY)
+
+
 
 
         startButton.setOnClickListener{
@@ -104,4 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
 }
+
+

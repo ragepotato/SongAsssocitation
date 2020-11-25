@@ -37,6 +37,7 @@ class SpeechToText : AppCompatActivity() {
     private lateinit var countDownTimer: CountDownTimer
     private var timerRunning: Boolean = false
     private var timeLeftInMillis : Long = START_TIME
+    private var timeEnd : Long = System.currentTimeMillis() + timeLeftInMillis
 
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
@@ -57,27 +58,7 @@ class SpeechToText : AppCompatActivity() {
         progress_countdown.max = (START_TIME/1000).toInt()
 
 
-        startTimer()
 
-//        buttonStartPause.setOnClickListener { v ->
-//            if (timerRunning){
-//                pauseTimer()
-//            }
-//            else{
-//                startTimer()
-//            }
-//
-//        }
-
-
-
-
-
-//        buttonReset.setOnClickListener { v ->
-//            resetTimer()
-//        }
-
-        updateCountdown()
 
         microphoneImage.setOnClickListener {
             getSpeechInput()
@@ -87,7 +68,11 @@ class SpeechToText : AppCompatActivity() {
         } catch (e: NullPointerException) {
         }
 
-
+        if (savedInstanceState == null) {
+            startTimer()
+            updateCountdown()
+            println("---------lalallala here-----------------")
+        }
         println(GameViewModel.easyQuestionBank)
         gameViewModel.currentIndex.observe(this, Observer {
             songWord.text = GameViewModel.easyQuestionBank[it]
@@ -102,7 +87,16 @@ class SpeechToText : AppCompatActivity() {
     }
 
 
+
+    override fun onDestroy() {
+
+        pauseTimer()
+        super.onDestroy()
+    }
+
+
     private fun startTimer(){
+        timeEnd = System.currentTimeMillis() + timeLeftInMillis
         countDownTimer  = object: CountDownTimer(timeLeftInMillis, 1000){
 
             override fun onTick(millisUntilFinished: Long) {
@@ -112,29 +106,25 @@ class SpeechToText : AppCompatActivity() {
             override fun onFinish() {
                 println("----------ENDING TIME-----------")
                 timerRunning = false
-
+                resetTimer()
 
             }
 
 
         }.start()
         timerRunning = true
-//        buttonStartPause.setText("Pause")
-//        buttonReset.isEnabled = false
+
     }
 
     private fun pauseTimer(){
         countDownTimer.cancel()
         timerRunning = false
-//        buttonStartPause.setText("Start")
-//        buttonReset.isEnabled = true
+
     }
 
     private fun resetTimer(){
         timeLeftInMillis = START_TIME
         updateCountdown()
-//        buttonReset.isEnabled = false
-//        buttonStartPause.isEnabled = true
         progress_countdown.progress = 0
         progress_countdown.max = (START_TIME/1000).toInt()
         val intent = EndGame.newIntent(
@@ -160,6 +150,31 @@ class SpeechToText : AppCompatActivity() {
         progress_countdown.progress = ((START_TIME/1000) - secondsLeft).toInt()
 
 
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+
+
+        super.onSaveInstanceState(outState)
+        outState.putLong("millisLeft", timeLeftInMillis)
+        outState.putBoolean("timerRunning", timerRunning)
+        outState.putLong("timeEnd", timeEnd)
+
+        println("-------------TIMER CANCELLED---------------")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        println("Gothereherhehrhehrher")
+        timeLeftInMillis = savedInstanceState.getLong("millisLeft")
+        timerRunning = savedInstanceState.getBoolean("timerRunning")
+        updateCountdown()
+        if (timerRunning){
+            timeEnd = savedInstanceState.getLong("timeEnd")
+            timeLeftInMillis = timeEnd - System.currentTimeMillis()
+            startTimer()
+        }
 
     }
 
@@ -195,6 +210,7 @@ class SpeechToText : AppCompatActivity() {
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         try {
+
             startActivityForResult(micIntent, REQUEST_CODE_SPEECH_INPUT)
 
 
@@ -355,10 +371,14 @@ class SpeechToText : AppCompatActivity() {
 
                 } else if (resultCode != Activity.RESULT_OK) {
                     //speechResult.text = "nullFail"
+
                 } else {
                     //speechResult.text = "failed"
                 }
             }
+
+
+
 
         }
     }
