@@ -63,10 +63,7 @@ class SpeechToText : AppCompatActivity() {
         microphoneImage.setOnClickListener {
             getSpeechInput()
         }
-        try {
-            this.supportActionBar!!.hide()
-        } catch (e: NullPointerException) {
-        }
+
 
         if (savedInstanceState == null) {
             startTimer()
@@ -297,8 +294,7 @@ class SpeechToText : AppCompatActivity() {
                                     firstResultSong =
                                         firstResultLink.split(" – ").toTypedArray()[0].split(" Lyrics").toTypedArray()[0]
 
-                                    println(firstResultArtist)
-                                    println(firstResultSong)
+
                                 }
                                 else {
                                     firstResultArtist = firstResultLink.split(" – ").toTypedArray()[0]
@@ -308,14 +304,31 @@ class SpeechToText : AppCompatActivity() {
                                     firstResultSong =
                                         firstResultLink.split(" – ").toTypedArray()[1].split(" Lyrics").toTypedArray()[0]
 
-                                    println(firstResultArtist)
-                                    println(firstResultSong)
+
+                                }
+                                var firstResultLyrics = ""
+                                if (doc.getElementsByAttributeValueContaining("class", "aCOpRe").first().childrenSize() > 1){
+                                    firstResultLyrics =
+                                       doc.getElementsByAttributeValueContaining("class", "aCOpRe").first().child(1).toString().replace("Check @<em>genius</em> for updates. ... ", "")
+                                }
+                                else{
+                                    firstResultLyrics =
+                                        doc.getElementsByAttributeValueContaining("class", "aCOpRe").first().child(0).toString().replace("Check @<em>genius</em> for updates. ... ", "")
                                 }
 
+                                println(songWord.text.toString())
+
+                                println(firstResultLyrics)
+                                var theLyrics = firstResultLyrics.replace("Lyrics", "").replace("<span>", "").replace("</span>", "").replace(
+                                        Regex("\\[.*\\]"), "").replace("&nbsp;", "").replace("  ", " ").replace("<em>", "<font color='#EE0000'>").replace("</em>", "</font>")
+                                println(theLyrics)
+                                theLyrics = theLyrics.replace(songWord.text.toString(), "<u><b>" + songWord.text.toString() + "</b></u>", ignoreCase = true)
+                                println(theLyrics)
 
                                 val intent = AnswerResult.newIntent(
                                     this@SpeechToText,
                                     answer,
+                                    theLyrics,
                                     firstResultSong,
                                     firstResultArtist,
                                     gameViewModel.number

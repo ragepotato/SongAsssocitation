@@ -21,6 +21,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bgpurple"
         android:text="New Game"
+        android:textAllCaps="false"
+        android:fontFamily="@font/fredokaone"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,6 +49,8 @@
             android:checked="true"
             android:textOn="EASY"
             android:textOff="EASY"
+
+            android:fontFamily="@font/fredokaone"
             android:onClick="onToggle"
             android:textSize="18dp" />
 
@@ -55,7 +59,7 @@
             android:layout_width="100dp"
             android:layout_height="45dp"
             android:layout_margin="3dp"
-
+            android:fontFamily="@font/fredokaone"
             android:onClick="onToggle"
             android:textOn="MEDIUM"
             android:textOff="MEDIUM"
@@ -66,7 +70,7 @@
             android:layout_width="100dp"
             android:layout_height="45dp"
             android:layout_margin="3dp"
-
+            android:fontFamily="@font/fredokaone"
             android:onClick="onToggle"
             android:textOn="HARD"
             android:textOff="HARD"

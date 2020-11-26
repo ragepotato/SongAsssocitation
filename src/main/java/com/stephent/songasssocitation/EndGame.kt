@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_answer_result.*
+import kotlinx.android.synthetic.main.activity_gameover.*
 
 private const val GET_REASON_LOSS = "com.stephent.songassociation.get_reason_loss"
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
@@ -19,24 +20,23 @@ class EndGame : AppCompatActivity(){
         setContentView(R.layout.activity_gameover)
         endgameTextView = findViewById(R.id.whyYouLostText)
         endgameTextView.setText(intent.getStringExtra(GET_REASON_LOSS))
+        var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1)
+        finalScore.setText("Final Score: " + currentScore)
 
 
 
 
 
-
-//        next_question_button.setOnClickListener {
-//            var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1) + 1
-//            println("Current score: " + currentScore)
-//            val intent = SpeechToText.newIntent(this@AnswerResult, currentScore)
-//
-//            startActivity(intent)
-//        }
+        back_home_button.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java).apply {
+            }
+            startActivity(intent)
+            finish()
+        }
 
     }
 
     companion object {
-
         fun newIntent(
             packageContext: Context,
             endgameReason: String,

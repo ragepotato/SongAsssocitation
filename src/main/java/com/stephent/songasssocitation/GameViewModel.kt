@@ -19,10 +19,18 @@ class GameViewModel : ViewModel() {
         MutableLiveData<Int>()
     }
 
+
+
     companion object{
         var easyQuestionBank = mutableListOf<String>(
-            "love", "girl", "boy", "money", "like", "place", "you", "one", "face", "bad", "good", "friend", "way", "somebody", "someone"
+            "love", "girl", "boy", "money", "like", "place", "you", "one", "face", "bad", "good", "friend", "way", "somebody", "someone", "kiss", "mine"
         ).shuffled()
+
+        fun shuffleEasyQuestionBank (){
+            easyQuestionBank = easyQuestionBank.shuffled()
+        }
+
+
     }
 
 

@@ -46,8 +46,8 @@ class MainActivity : AppCompatActivity() {
 
         startButton.setOnClickListener{
             println(whichDifficulty)
-            GameViewModel.easyQuestionBank.shuffled()
-            val intent = Intent(this, SpeechToText::class.java)
+            GameViewModel.shuffleEasyQuestionBank()
+            val intent = SpeechToText.newIntent(this@MainActivity, 0)
             startActivity(intent)
         }
 

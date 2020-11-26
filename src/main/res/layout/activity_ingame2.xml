@@ -5,64 +5,93 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/speechResult"
+        android:id="@+id/currentScoreView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:text="Add here"
+        android:padding="10dp"
+        android:text="Score: "
         android:textColor="#100"
-        android:textSize="26sp"
+        android:textSize="25sp"
         android:textStyle="normal"
 
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+
+        app:layout_constraintEnd_toStartOf="@+id/timer_countdown"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/timer_countdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="25sp"
 
-        android:textSize="70sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/currentScoreView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1:00" />
+
+
+    <LinearLayout
+        android:layout_marginTop="10sp"
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bgpurple"
+
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/speechResult"
-        tools:text="10:00" />
+        app:layout_constraintTop_toBottomOf="@+id/timer_countdown">
+
+        <TextView
+            android:id="@+id/songWord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10sp"
+            android:text="heart"
+            android:textColor="#100"
+            android:textSize="30sp"
+            android:textStyle="normal"
+            android:fontWeight="100"
+
+            android:fontFamily="@font/fredokaone"
+            />
+    </LinearLayout>
+
 
     <ImageButton
         android:id="@+id/microphoneImage"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="120dp"
+        android:layout_width="167dp"
+        android:layout_height="167dp"
         android:background="@null"
 
         android:gravity="center"
         android:scaleType="fitCenter"
 
         android:src="@drawable/ic_mic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timer_countdown"
-        app:layout_constraintVertical_bias="0.53" />
+        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+        app:layout_constraintTop_toTopOf="@+id/progress_countdown"
+        app:layout_constraintLeft_toLeftOf="@+id/progress_countdown"
+        app:layout_constraintRight_toRightOf="@+id/progress_countdown"
+        />
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/progress_countdown"
-
+        style="@style/Widget.MaterialProgressBar.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="288dp"
-        android:minHeight="288dp"
+        android:minWidth="260dp"
+        android:minHeight="260dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timer_countdown"
-        app:layout_constraintVertical_bias="0.28" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

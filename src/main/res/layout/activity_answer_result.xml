@@ -21,18 +21,33 @@
     <!--        app:layout_constraintStart_toStartOf="parent"-->
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
+    <TextView
+        android:id="@+id/congratsScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/fredokaone"
+        android:fontWeight="100"
+        android:gravity="center"
+        android:text="Great! Current Score: "
+        android:textColor="#100"
+        android:textSize="25sp"
+        android:textStyle="normal"
+        android:paddingTop="15sp"
+        android:paddingBottom="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="300sp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20sp"
         android:background="@drawable/bgquestion"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/congratsScore">
 
         <TextView
             android:id="@+id/foundSong"
@@ -63,17 +78,37 @@
             android:textColor="#100"
             android:textSize="20sp"
             android:textStyle="normal" />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/foundLyrics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/fredokaone"
+        android:fontWeight="100"
+        android:gravity="center"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:text="Artist here Artist here Artist here"
+        android:textColor="#100"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/imageArtist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
     <ImageView
         android:id="@+id/imageArtist"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
 
         app:layout_constraintBottom_toTopOf="@+id/next_question_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        app:layout_constraintTop_toBottomOf="@+id/foundLyrics"
+        />
 
     <Button
         android:id="@+id/next_question_button"
@@ -81,6 +116,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
         android:background="@drawable/bgpurple"
+        android:fontFamily="@font/fredokaone"
+        android:textAllCaps="false"
         android:text="Next Song"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"

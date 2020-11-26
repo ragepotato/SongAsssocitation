@@ -12,10 +12,10 @@
         android:id="@+id/youLoseText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HOLD THIS L!"
+        android:text="Loser!"
         android:textColor="#100"
         android:textSize="33sp"
-
+        android:fontFamily="@font/fredokaone"
         android:textStyle="normal"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,9 +29,38 @@
         android:text="Here's why: "
         android:textColor="#100"
         android:textSize="26sp"
-
+        android:fontFamily="@font/fredokaone"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/youLoseText" />
+
+    <TextView
+        android:id="@+id/finalScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:text="Final Score:  "
+        android:textColor="#100"
+        android:textSize="26sp"
+        android:fontFamily="@font/fredokaone"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/whyYouLostText" />
+    <Button
+        android:id="@+id/back_home_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        android:background="@drawable/bgpurple"
+        android:fontFamily="@font/fredokaone"
+        android:textAllCaps="false"
+        android:text="Main Menu"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PersistableBundle
+import android.text.Html
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_answer_result.*
@@ -31,6 +32,7 @@ import java.lang.Exception
 
 
 private const val GET_GUESS_FOR_SONG = "com.stephent.songassociation.guess_for_song"
+private const val GET_LYRICS_FOR_SONG = "com.stephent.songassociation.guess_for_song"
 private const val GET_TITLE_FOR_SONG = "com.stephent.songassociation.title_for_song"
 private const val GET_ARTIST_FOR_SONG = "com.stephent.songassociation.artist_for_song"
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
@@ -45,22 +47,26 @@ class AnswerResult : AppCompatActivity() {
         setContentView(R.layout.activity_answer_result)
 
 
-//        answerTextView = findViewById(R.id.theSpeechResult)
-//        theSpeechResult.setText(intent.getStringExtra(GET_GUESS_FOR_SONG))
 
         foundSong.setText(intent.getStringExtra(GET_TITLE_FOR_SONG))
 
         foundArtist.setText(intent.getStringExtra(GET_ARTIST_FOR_SONG))
 
-        fetchJson()
+        var foundLyricText = "\"" + intent.getStringExtra(GET_LYRICS_FOR_SONG) + "\""
+        foundLyrics.setText(Html.fromHtml(foundLyricText))
 
+        fetchJson()
+        var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1) + 1
+
+        congratsScore.setText("Great! Score: " + currentScore)
 
         next_question_button.setOnClickListener {
-            var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1) + 1
+
             println("Current score: " + currentScore)
             val intent = SpeechToText.newIntent(this@AnswerResult, currentScore)
 
             startActivity(intent)
+            finish()
         }
 
     }
@@ -70,12 +76,14 @@ class AnswerResult : AppCompatActivity() {
         fun newIntent(
             packageContext: Context,
             songGuess: String,
+            songLyrics: String,
             songTitle: String,
             songArtist: String,
             currentScore: Int
         ): Intent {
             return Intent(packageContext, AnswerResult::class.java).apply {
                 putExtra(GET_GUESS_FOR_SONG, songGuess)
+                putExtra(GET_LYRICS_FOR_SONG, songLyrics)
                 putExtra(GET_TITLE_FOR_SONG, songTitle)
                 putExtra(GET_ARTIST_FOR_SONG, songArtist)
                 putExtra(GET_CURRENT_SCORE, currentScore)
@@ -93,12 +101,12 @@ class AnswerResult : AppCompatActivity() {
         client.newCall(request).enqueue(object: okhttp3.Callback {
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
                 val body = response?.body()?.string()
-                println(body)
+                //println(body)
 
                 val gson = GsonBuilder().create()
 
                 val artistBody = gson.fromJson(body, ArtistInfo::class.java)
-                println(artistBody)
+                //println(artistBody)
 
 
 
