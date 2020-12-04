@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="475dp"
+    android:paddingTop = "20dp"
+    android:paddingLeft = "15dp"
+    android:paddingRight = "15dp"
+    android:paddingBottom = "20dp"
+    android:background="@drawable/background"
+    android:layout_gravity="center"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/instructions_label"
+        android:text="HOW TO PLAY"
+        android:textSize="20dp"
+        android:fontFamily="@font/fredokaone"
+        android:layout_gravity="center_horizontal"
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/instructions_pt1"
+        android:text="1. When you start playing, a word will appear at the top of the screen. You have to sing a song that has that word in it before the timer runs out.\n2. When you're ready to start singing, press the:"
+
+
+
+        android:textSize="13dp"
+        android:fontFamily="@font/fredokaone"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <ImageView
+        android:layout_height="45dp"
+        android:layout_width="45dp"
+        android:layout_gravity="center"
+        android:background="@drawable/ic_mic"
+
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/instructions_pt2"
+        android:text="icon and sing into your microphone. Try to be as clear as possible!\n3. If the song exists, you get a point and move onto the next word.\n4. The game is over if: \n   -you run out of time\n   -you don't use the right word\n   -the song doesn't exist/use word\n   -you don't sing enough; at least 5 words minimum.\n5. Keep going until you lose!"
+
+
+
+        android:textSize="13dp"
+        android:fontFamily="@font/fredokaone"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <Button
+        android:id="@+id/got_it_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:text= "Got it!"
+        android:textAllCaps="false"
+        android:background="@drawable/bgpurple"
+        android:fontFamily="@font/fredokaone"
+    />
+
+
+</LinearLayout>

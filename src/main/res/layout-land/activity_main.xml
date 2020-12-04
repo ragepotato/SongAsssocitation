@@ -17,17 +17,17 @@
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 
-<!--    <ImageView-->
-<!--        android:layout_width="300dp"-->
-<!--        android:layout_height="180dp"-->
-
-<!--        android:background="@drawable/sa_logo3"-->
-
-<!--        app:layout_constraintBottom_toTopOf="@+id/true_button"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="422dp"
+        android:layout_height="169dp"
+        app:layout_constraintBottom_toTopOf="@+id/true_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.537"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/sa_logo3land" />
 
     <Button
         android:id="@+id/true_button"
@@ -40,12 +40,12 @@
         android:textSize="20dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/instructions_button"
 
         app:layout_constraintStart_toStartOf="parent"
 
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.447" />
+         />
 
     <Button
         android:id="@+id/instructions_button"
@@ -56,10 +56,12 @@
         android:text="How to Play"
         android:textAllCaps="false"
         android:textSize="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/true_button"
-        android:layout_marginTop="15sp"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/true_button"
        />
 
 
@@ -122,15 +124,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toggleGroup" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/true_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sa_logo3" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

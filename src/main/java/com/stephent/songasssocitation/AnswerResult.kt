@@ -55,7 +55,12 @@ class AnswerResult : AppCompatActivity() {
         var foundLyricText = "\"" + intent.getStringExtra(GET_LYRICS_FOR_SONG) + "\""
         foundLyrics.setText(Html.fromHtml(foundLyricText))
 
+
+
+
         fetchJson()
+
+
         var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1) + 1
 
         congratsScore.setText("Great! Score: " + currentScore)
@@ -91,48 +96,74 @@ class AnswerResult : AppCompatActivity() {
         }
     }
 
-    fun fetchJson(){
-        println("Trying to fetch JSON")
-        val url = "https://www.theaudiodb.com/api/v1/json/1/search.php?s=" + intent.getStringExtra(GET_ARTIST_FOR_SONG)
+    fun fetchJson() {
 
-        val request = Request.Builder().url(url).build()
+        println("1Got herelololollo")
+        if (foundArtist.text.toString() == "") {
+            println("2Got herelololollo")
+            val uiHandler = Handler(Looper.getMainLooper())
+            uiHandler.post(Runnable {
+                Picasso.get()
+                    .load("https://webstockreview.net/images/mystery-clipart-anonymous-1.png")
+                    .into(imageArtist)
+            })
+        } else {
+            println("3Got herelololollo")
+            println("Trying to fetch JSON")
+            val url =
+                "https://www.theaudiodb.com/api/v1/json/1/search.php?s=" + intent.getStringExtra(
+                    GET_ARTIST_FOR_SONG
+                )
 
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object: okhttp3.Callback {
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
-                val body = response?.body()?.string()
-                //println(body)
+            val request = Request.Builder().url(url).build()
 
-                val gson = GsonBuilder().create()
+            val client = OkHttpClient()
+            client.newCall(request).enqueue(object : okhttp3.Callback {
+                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response?) {
+                    val body = response?.body()?.string()
+                    //println(body)
 
-                val artistBody = gson.fromJson(body, ArtistInfo::class.java)
-                //println(artistBody)
+                    val gson = GsonBuilder().create()
+
+                    val artistBody = gson.fromJson(body, ArtistInfo::class.java)
+                    //println(artistBody)
 
 
+                    try {
+                        if (artistBody != null) {
+                            var artistLink = artistBody.artists[0].strArtistThumb
+                            val uiHandler = Handler(Looper.getMainLooper())
 
-                try {
-                    if(artistBody != null){
-                        var artistLink = artistBody.artists[0].strArtistThumb
+                            uiHandler.post(Runnable {
+                                Picasso.get().load(artistLink).into(imageArtist)
+                            })
+                        }
+
+                    } catch (e: Exception) {
+                        println(e.message)
+//                    val uiHandler = Handler(Looper.getMainLooper())
+//                    uiHandler.post(Runnable {
+//                        Picasso.get().load(artistLink).into(imageArtist)
+//                    })
                         val uiHandler = Handler(Looper.getMainLooper())
                         uiHandler.post(Runnable {
-                            Picasso.get().load(artistLink).into(imageArtist)
+                            Picasso.get()
+                                .load("https://webstockreview.net/images/mystery-clipart-anonymous-1.png")
+                                .into(imageArtist)
                         })
                     }
 
-                }catch (e: Exception){
-                    println(e.message)
+
+                }
+
+                override fun onFailure(call: okhttp3.Call, e: IOException) {
+                    println("Failed: " + e.toString())
                 }
 
 
-            }
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                println("Failed: " + e.toString())
-            }
-
-
-        })
+            })
+        }
     }
-
 
 
 }

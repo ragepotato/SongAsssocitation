@@ -15,6 +15,7 @@ import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.media.MediaPlayer
 import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,16 +29,15 @@ private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_
 
 
 class SpeechToText : AppCompatActivity() {
-    private val START_TIME : Long = 30000
+    private val START_TIME : Long = GameViewModel.timeBank.toLong()
     private lateinit var gameViewModel: GameViewModel
     private lateinit var textviewCountdown : TextView
-    //private lateinit var buttonStartPause : Button
-    //private lateinit var buttonReset : Button
 
     private lateinit var countDownTimer: CountDownTimer
     private var timerRunning: Boolean = false
     private var timeLeftInMillis : Long = START_TIME
     private var timeEnd : Long = System.currentTimeMillis() + timeLeftInMillis
+    private lateinit var clockPlayer : MediaPlayer
 
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
@@ -68,26 +68,35 @@ class SpeechToText : AppCompatActivity() {
         if (savedInstanceState == null) {
             startTimer()
             updateCountdown()
+
             println("---------lalallala here-----------------")
         }
-        println(GameViewModel.easyQuestionBank)
+        clockPlayer = MediaPlayer.create(this, R.raw.clockticking4)
+        clockPlayer.start()
+        println(GameViewModel.questionBank)
         gameViewModel.currentIndex.observe(this, Observer {
-            songWord.text = GameViewModel.easyQuestionBank[it]
-            currentScoreView.text = "Score: " + gameViewModel.currentIndex.value.toString()
+            songWord.text = GameViewModel.questionBank[intent.getIntExtra(GET_CURRENT_SCORE, 0) % GameViewModel.questionBank.size]
+            currentScoreView.text = "Score: " + intent.getIntExtra(GET_CURRENT_SCORE, 0)
         })
 
-        gameViewModel.number = intent.getIntExtra(GET_CURRENT_SCORE, 0)
+        gameViewModel.number = intent.getIntExtra(GET_CURRENT_SCORE, 0) % GameViewModel.questionBank.size
 
         gameViewModel.currentIndex.value = gameViewModel.number
 
 
     }
 
+    override fun onStart() {
+        super.onStart()
+
+    }
 
 
     override fun onDestroy() {
-
+        println("Rotating")
         pauseTimer()
+
+
         super.onDestroy()
     }
 
@@ -127,9 +136,11 @@ class SpeechToText : AppCompatActivity() {
         val intent = EndGame.newIntent(
             this@SpeechToText,
             "Time ran out",
-            gameViewModel.number
+            intent.getIntExtra(GET_CURRENT_SCORE, 0)
         )
         startActivity(intent)
+        clockPlayer.stop()
+        clockPlayer.release()
         finish()
 
     }
@@ -157,8 +168,11 @@ class SpeechToText : AppCompatActivity() {
         outState.putLong("millisLeft", timeLeftInMillis)
         outState.putBoolean("timerRunning", timerRunning)
         outState.putLong("timeEnd", timeEnd)
-
         println("-------------TIMER CANCELLED---------------")
+        if (clockPlayer.isPlaying){
+            clockPlayer.stop()
+            clockPlayer.release()
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -172,6 +186,8 @@ class SpeechToText : AppCompatActivity() {
             timeLeftInMillis = timeEnd - System.currentTimeMillis()
             startTimer()
         }
+
+
 
     }
 
@@ -207,7 +223,7 @@ class SpeechToText : AppCompatActivity() {
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         try {
-
+            clockPlayer.pause()
             startActivityForResult(micIntent, REQUEST_CODE_SPEECH_INPUT)
 
 
@@ -230,7 +246,7 @@ class SpeechToText : AppCompatActivity() {
 
 
                     if (answer.contains(songWord.text, ignoreCase = true)){
-                        if(answer.split(" ").toTypedArray().size > 5){
+                        if(answer.split(" ").toTypedArray().size >= 5){
 
 
                         thread {
@@ -247,33 +263,6 @@ class SpeechToText : AppCompatActivity() {
 
                             lateinit var firstResultArtist: String
                             lateinit var firstResultSong: String
-//                        if (!doc.getElementsByAttributeValueContaining(
-//                                "class",
-//                                "qrShPb kno-ecr-pt PZPZlf mfMhoc"
-//                            ).isEmpty()
-//                        ) {
-//                            firstResultSong = doc.getElementsByAttributeValueContaining(
-//                                "class",
-//                                "qrShPb kno-ecr-pt PZPZlf mfMhoc"
-//                            ).first().text()
-//                            println(firstResultSong)
-//                            firstResultArtist =
-//                                doc.getElementsByAttributeValueContaining("class", "wwUB2c PZPZlf")
-//                                    .first()
-//                                    .text()
-//                            println(firstResultSong + " - " + firstResultArtist)
-//                            val intent = AnswerResult.newIntent(
-//                                this@SpeechToText,
-//                                answer,
-//                                firstResultSong,
-//                                firstResultArtist,
-//                                gameViewModel.number
-//                            )
-//                            startActivity(intent)
-//
-//                            println(gameViewModel.currentIndex.value.toString())
-//                            finish()
-//                        } else
                             if (!doc.getElementsByAttributeValueContaining(
                                     "class",
                                     "LC20lb DKV0Md"
@@ -286,23 +275,42 @@ class SpeechToText : AppCompatActivity() {
 
                                 println(firstResultLink)
 
-                                if (firstResultLink.split(" – ").toTypedArray().size <=1){
-                                    firstResultArtist = ""
-                                    println("firstResultArtist: " + firstResultArtist)
+                                var linkArray = firstResultLink.split(" – ").toTypedArray()
+                                println(linkArray[0])
+                                println("ggggggg" + linkArray[0] + "gggggggg")
 
-                                    println(firstResultLink.split(" – ").toTypedArray().size)
-                                    firstResultSong =
-                                        firstResultLink.split(" – ").toTypedArray()[0].split(" Lyrics").toTypedArray()[0]
+
+                                if (linkArray.size <=1){
+
+                                    if (firstResultLink.split(" - ").toTypedArray().size > 1){
+                                        if (firstResultLink.split(" - ").toTypedArray()[1].equals("Genius")){
+                                            println("------------------grgergergege got here")
+                                            firstResultArtist = ""
+                                            firstResultSong = firstResultLink.split(" - ").toTypedArray()[0]
+                                        }
+                                    }
+                                    else{
+                                        firstResultArtist = ""
+                                        println("1111111firstResultArtist: " + firstResultArtist)
+
+                                        println(linkArray.size)
+                                        firstResultSong =
+                                            linkArray[0].split(" Lyrics").toTypedArray()[0]
+                                    }
+
+
 
 
                                 }
-                                else {
-                                    firstResultArtist = firstResultLink.split(" – ").toTypedArray()[0]
-                                    println("firstResultArtist: " + firstResultArtist)
 
-                                    println(firstResultLink.split(" – ").toTypedArray().size)
+
+                                else {
+                                    firstResultArtist = linkArray[0]
+                                    println("222222firstResultArtist: " + firstResultArtist)
+
+                                    println(linkArray.size)
                                     firstResultSong =
-                                        firstResultLink.split(" – ").toTypedArray()[1].split(" Lyrics").toTypedArray()[0]
+                                        linkArray[1].split(" Lyrics").toTypedArray()[0]
 
 
                                 }
@@ -319,24 +327,50 @@ class SpeechToText : AppCompatActivity() {
                                 println(songWord.text.toString())
 
                                 println(firstResultLyrics)
+
+
+                                println(firstResultLyrics)
                                 var theLyrics = firstResultLyrics.replace("Lyrics", "").replace("<span>", "").replace("</span>", "").replace(
                                         Regex("\\[.*\\]"), "").replace("&nbsp;", "").replace("  ", " ").replace("<em>", "<font color='#EE0000'>").replace("</em>", "</font>")
                                 println(theLyrics)
                                 theLyrics = theLyrics.replace(songWord.text.toString(), "<u><b>" + songWord.text.toString() + "</b></u>", ignoreCase = true)
                                 println(theLyrics)
+                                if (!firstResultLyrics.contains(songWord.text.toString(), ignoreCase = true)){
+                                    println("-------------OFOFOFO GOT HERE")
+                                    val intent = EndGame.newIntent(
+                                        this@SpeechToText,
+                                        "Song doesn't have word",
+                                        intent.getIntExtra(GET_CURRENT_SCORE, 0)
+                                    )
+                                    startActivity(intent)
+                                    clockPlayer.stop()
+                                    clockPlayer.release()
+                                    finish()
+                                }
+                                else{
+                                    if (firstResultArtist.equals("Genius")){
+                                        println("Artist is genius")
+                                        firstResultArtist = ""
+                                    }
 
-                                val intent = AnswerResult.newIntent(
-                                    this@SpeechToText,
-                                    answer,
-                                    theLyrics,
-                                    firstResultSong,
-                                    firstResultArtist,
-                                    gameViewModel.number
-                                )
-                                startActivity(intent)
+                                    println("Song title: " + firstResultSong)
+                                    println("Artist: " + firstResultArtist)
+                                    val intent = AnswerResult.newIntent(
+                                        this@SpeechToText,
+                                        answer,
+                                        theLyrics,
+                                        firstResultSong,
+                                        firstResultArtist,
+                                        intent.getIntExtra(GET_CURRENT_SCORE, 0)
+                                    )
 
-                                println(gameViewModel.currentIndex.value.toString())
-                                finish()
+                                    startActivity(intent)
+                                    clockPlayer.stop()
+                                    clockPlayer.release()
+                                    println(gameViewModel.currentIndex.value.toString())
+                                    finish()
+                                }
+
                                 // can't access UI elements from the background thread
 
                             }
@@ -346,9 +380,11 @@ class SpeechToText : AppCompatActivity() {
                                 val intent = EndGame.newIntent(
                                     this@SpeechToText,
                                     "Song doesn't exist",
-                                    gameViewModel.number
+                                    intent.getIntExtra(GET_CURRENT_SCORE, 0)
                                 )
                                 startActivity(intent)
+                                clockPlayer.stop()
+                                clockPlayer.release()
                                 finish()
                             }
                         }
@@ -361,9 +397,11 @@ class SpeechToText : AppCompatActivity() {
                             val intent = EndGame.newIntent(
                                 this@SpeechToText,
                                 "Not enough words",
-                                gameViewModel.number
+                                intent.getIntExtra(GET_CURRENT_SCORE, 0)
                             )
                             startActivity(intent)
+                            clockPlayer.stop()
+                            clockPlayer.release()
                             finish()
                         }
 
@@ -373,8 +411,10 @@ class SpeechToText : AppCompatActivity() {
                         val intent = EndGame.newIntent(
                             this@SpeechToText,
                             "Didn't use needed word",
-                            gameViewModel.number
+                            intent.getIntExtra(GET_CURRENT_SCORE, 0)
                         )
+                        clockPlayer.stop()
+                        clockPlayer.release()
                         startActivity(intent)
                         finish()
                     }
@@ -383,6 +423,7 @@ class SpeechToText : AppCompatActivity() {
 
 
                 } else if (resultCode != Activity.RESULT_OK) {
+                    clockPlayer.start()
                     //speechResult.text = "nullFail"
 
                 } else {
@@ -396,6 +437,14 @@ class SpeechToText : AppCompatActivity() {
         }
     }
 
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(clockPlayer.isPlaying){
+            clockPlayer.stop()
+            clockPlayer.release()
+        }
+    }
 
     companion object {
         fun newIntent(packageContext: Context, currentScore: Int): Intent {

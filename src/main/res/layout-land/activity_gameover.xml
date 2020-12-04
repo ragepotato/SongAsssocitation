@@ -12,26 +12,25 @@
         android:id="@+id/youLoseText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
         android:fontFamily="@font/fredokaone"
         android:text="GAME OVER!"
         android:textColor="#100"
         android:textSize="33sp"
 
         android:textStyle="normal"
-        app:layout_constraintEnd_toEndOf="parent"
 
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:layout_editor_absoluteY="30dp" />
 
     <TextView
         android:id="@+id/whyYouLostText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/fredokaone"
         android:text="Here's why: "
         android:textColor="#100"
         android:textSize="26sp"
-        android:fontFamily="@font/fredokaone"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,15 +40,16 @@
         android:id="@+id/finalScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20sp"
+        android:fontFamily="@font/fredokaone"
         android:text="Final Score:  "
         android:textColor="#100"
         android:textSize="26sp"
-        android:fontFamily="@font/fredokaone"
         android:textStyle="normal"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/back_home_button"
+        app:layout_constraintEnd_toStartOf="@id/highScore"
+
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whyYouLostText" />
+        app:layout_constraintTop_toBottomOf="@id/whyYouLostText" />
 
     <TextView
         android:id="@+id/highScore"
@@ -61,23 +61,25 @@
         android:textColor="#100"
         android:textSize="26sp"
         android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@+id/back_home_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finalScore" />
+        app:layout_constraintStart_toEndOf="@id/finalScore"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/back_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
         android:background="@drawable/bgpurple"
         android:fontFamily="@font/fredokaone"
-        android:textAllCaps="false"
         android:text="Main Menu"
+        android:textAllCaps="false"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/finalScore"
+        app:layout_constraintEnd_toStartOf="@id/highScore"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
