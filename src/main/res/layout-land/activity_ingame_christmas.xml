@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/holiday_background"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/currentScoreView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Score: "
+        android:textColor="#100"
+        android:textSize="25sp"
+        android:textStyle="normal"
+
+        android:fontFamily="@font/christmasfont"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/timer_countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="#100"
+        android:textSize="25sp"
+        android:fontFamily="@font/christmasfont"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout3"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1:00" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bgpurple"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.499"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/songWord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10sp"
+            android:fontFamily="@font/christmasfont"
+            android:fontWeight="100"
+            android:text="heart"
+            android:textColor="#100"
+            android:textSize="30sp"
+
+            android:textStyle="normal" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/microphoneImage"
+        android:layout_width="167dp"
+        android:layout_height="167dp"
+        android:background="@null"
+
+        android:gravity="center"
+        android:scaleType="fitCenter"
+
+        android:src="@drawable/ic_mic"
+        app:layout_constraintBottom_toBottomOf="@+id/progress_countdown"
+        app:layout_constraintLeft_toLeftOf="@+id/progress_countdown"
+        app:layout_constraintRight_toRightOf="@+id/progress_countdown"
+        app:layout_constraintTop_toTopOf="@+id/progress_countdown" />
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progress_countdown"
+        style="@style/Widget.MaterialProgressBar.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:mpb_progressTint="@color/colorHoliday"
+        android:minWidth="260dp"
+        android:minHeight="260dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

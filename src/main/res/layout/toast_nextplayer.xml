@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:paddingTop = "30dp"
+    android:paddingLeft = "25dp"
+    android:paddingRight = "25dp"
+    android:paddingBottom = "30dp"
+    android:background="@drawable/round_shape"
+    android:layout_gravity="center"
+    android:gravity="center"
+    >
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/next_player_label"
+        android:gravity="center"
+        android:text="Hand the phone to:"
+        android:textSize="20dp"
+        android:fontFamily="@font/fredokaone"
+        android:layout_gravity="center_horizontal"
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/player_guess_label"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Ellie"
+        android:textSize="25dp"
+        android:fontFamily="@font/fredokaone"
+        android:layout_gravity="center_horizontal"
+        />
+
+
+</LinearLayout>

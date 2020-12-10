@@ -28,7 +28,7 @@ import kotlin.concurrent.thread
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
 
 
-class SpeechToText : AppCompatActivity() {
+class HolidaySpeechToText : AppCompatActivity() {
     private val START_TIME : Long = GameViewModel.timeBank.toLong()
     private lateinit var gameViewModel: GameViewModel
     private lateinit var textviewCountdown : TextView
@@ -48,7 +48,7 @@ class SpeechToText : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
-        setContentView(R.layout.activity_ingame)
+        setContentView(R.layout.activity_ingame_christmas)
 
 
 
@@ -75,7 +75,9 @@ class SpeechToText : AppCompatActivity() {
 
             println("---------lalallala here-----------------")
         }
-        clockPlayer = MediaPlayer.create(this, R.raw.clockticking4)
+        clockPlayer = MediaPlayer.create(this, R.raw.jingle)
+        clockPlayer.isLooping = true
+        clockPlayer.setVolume(0.2F, 0.2F)
         clockPlayer.start()
         println(GameViewModel.questionBank)
         gameViewModel.currentIndex.observe(this, Observer {
@@ -92,7 +94,6 @@ class SpeechToText : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
     }
 
 
@@ -138,7 +139,7 @@ class SpeechToText : AppCompatActivity() {
         progress_countdown.progress = 0
         progress_countdown.max = (START_TIME/1000).toInt()
         val intent = EndGame.newIntent(
-            this@SpeechToText,
+            this@HolidaySpeechToText,
             "Time ran out",
             intent.getIntExtra(GET_CURRENT_SCORE, 0)
         )
@@ -318,8 +319,9 @@ class SpeechToText : AppCompatActivity() {
 
 
                                 }
-                                var firstResultLyrics = ""
+
                                 firstResultSong = firstResultSong.replace("Lyrics", "")
+                                var firstResultLyrics = ""
                                 if (doc.getElementsByAttributeValueContaining("class", "aCOpRe").first().childrenSize() > 1){
                                     firstResultLyrics =
                                        doc.getElementsByAttributeValueContaining("class", "aCOpRe").first().child(1).toString().replace("Check @<em>genius</em> for updates. ... ", "")
@@ -340,10 +342,10 @@ class SpeechToText : AppCompatActivity() {
                                 println(theLyrics)
                                 theLyrics = theLyrics.replace(songWord.text.toString(), "<u><b>" + songWord.text.toString() + "</b></u>", ignoreCase = true)
                                 println(theLyrics)
-                                if (!firstResultSong.contains(songWord.text.toString(), ignoreCase = true) && !firstResultLyrics.contains(songWord.text.toString(), ignoreCase = true)  ){
+                                if (!firstResultSong.contains(songWord.text.toString(), ignoreCase = true) && !firstResultLyrics.contains(songWord.text.toString(), ignoreCase = true)){
                                     println("-------------OFOFOFO GOT HERE")
                                     val intent = EndGame.newIntent(
-                                        this@SpeechToText,
+                                        this@HolidaySpeechToText,
                                         "Song doesn't have word",
                                         intent.getIntExtra(GET_CURRENT_SCORE, 0)
                                     )
@@ -361,7 +363,7 @@ class SpeechToText : AppCompatActivity() {
                                     println("Song title: " + firstResultSong)
                                     println("Artist: " + firstResultArtist)
                                     val intent = AnswerResult.newIntent(
-                                        this@SpeechToText,
+                                        this@HolidaySpeechToText,
                                         answer,
                                         theLyrics,
                                         firstResultSong,
@@ -383,7 +385,7 @@ class SpeechToText : AppCompatActivity() {
                             else{
                                 //song doesn't exist
                                 val intent = EndGame.newIntent(
-                                    this@SpeechToText,
+                                    this@HolidaySpeechToText,
                                     "Song doesn't exist",
                                     intent.getIntExtra(GET_CURRENT_SCORE, 0)
                                 )
@@ -400,7 +402,7 @@ class SpeechToText : AppCompatActivity() {
                         else{
                             //not long enough
                             val intent = EndGame.newIntent(
-                                this@SpeechToText,
+                                this@HolidaySpeechToText,
                                 "Not enough words",
                                 intent.getIntExtra(GET_CURRENT_SCORE, 0)
                             )
@@ -414,7 +416,7 @@ class SpeechToText : AppCompatActivity() {
                     else{
                         //song doesn't use word
                         val intent = EndGame.newIntent(
-                            this@SpeechToText,
+                            this@HolidaySpeechToText,
                             "Didn't use needed word",
                             intent.getIntExtra(GET_CURRENT_SCORE, 0)
                         )
@@ -453,7 +455,7 @@ class SpeechToText : AppCompatActivity() {
 
     companion object {
         fun newIntent(packageContext: Context, currentScore: Int): Intent {
-            return Intent(packageContext, SpeechToText::class.java).apply {
+            return Intent(packageContext, HolidaySpeechToText::class.java).apply {
                 putExtra(GET_CURRENT_SCORE, currentScore)
             }
         }

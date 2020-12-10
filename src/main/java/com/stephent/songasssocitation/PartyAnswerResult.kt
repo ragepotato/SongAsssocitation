@@ -1,5 +1,6 @@
 package com.stephent.songasssocitation
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
@@ -8,7 +9,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PersistableBundle
 import android.text.Html
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_answer_result.*
 import org.jsoup.Jsoup
@@ -23,6 +28,8 @@ import retrofit2.Retrofit
 
 import com.google.gson.GsonBuilder
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.popup_choose_word.view.*
+import kotlinx.android.synthetic.main.toast_nextplayer.view.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Call
@@ -38,23 +45,16 @@ private const val GET_TITLE_FOR_SONG = "com.stephent.songassociation.title_for_s
 private const val GET_ARTIST_FOR_SONG = "com.stephent.songassociation.artist_for_song"
 private const val GET_CURRENT_SCORE = "com.stephent.songassociation.get_current_score"
 
-class AnswerResult : AppCompatActivity() {
+class PartyAnswerResult : AppCompatActivity() {
 
-    private lateinit var clockPlayer: MediaPlayer
     private lateinit var answerTextView: TextView
-
+    private lateinit var clockPlayer : MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_answer_result)
 
-        if (savedInstanceState == null){
-            clockPlayer = MediaPlayer.create(this, R.raw.correctanswer)
-            clockPlayer.setVolume(0.01F, 0.01F)
-            clockPlayer.start()
 
-
-        }
 
         foundSong.setText(intent.getStringExtra(GET_TITLE_FOR_SONG))
 
@@ -62,34 +62,82 @@ class AnswerResult : AppCompatActivity() {
 
         var foundLyricText = "\"" + intent.getStringExtra(GET_LYRICS_FOR_SONG) + "\""
         foundLyrics.setText(Html.fromHtml(foundLyricText))
-
-
+        var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1)
+        var currentPlayer = GameViewModel.playerList.get(currentScore)
 
 
         fetchJson()
 
+        if (savedInstanceState == null){
+            clockPlayer = MediaPlayer.create(this, R.raw.correctanswer)
+            clockPlayer.setVolume(0.01F, 0.01F)
+            clockPlayer.start()
+        }
 
-        var currentScore = intent.getIntExtra(GET_CURRENT_SCORE, 1) + 1
 
-        congratsScore.setText("Great! Score: " + currentScore)
+        congratsScore.setText("Good job " + currentPlayer + "!")
 
         next_question_button.setOnClickListener {
 
-            println("Current score: " + currentScore)
-            var intent : Intent
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.popup_choose_word, null)
+            val mBuilder = AlertDialog.Builder(this).setView(dialogView)
+            val alertDialogView = mBuilder.show()
+            val readyButton = alertDialogView.findViewById<Button>(R.id.ready_start_button)
 
-            if (GameViewModel.currentDifficulty.equals("HOLIDAY")){
-                intent = HolidaySpeechToText.newIntent(this@AnswerResult, currentScore)
+
+
+
+
+            dialogView.current_player_label.text = currentPlayer
+            readyButton.setOnClickListener {
+
+                alertDialogView.dismiss()
+
+
+                var currentWord = dialogView.word_for_next.text.toString()
+                println(currentWord)
+                val toastLayout = layoutInflater.inflate(R.layout.toast_nextplayer, null)
+
+                GameViewModel.playerMap.put(currentPlayer,
+                    GameViewModel.playerMap.get(currentPlayer)?.plus(1)!!
+                )
+
+                println(GameViewModel.playerMap)
+                println(GameViewModel.playerMap)
+
+
+                currentScore = currentScore + 1
+
+                if (currentScore == GameViewModel.playerList.size) {
+                    currentScore = 0
+                    GameViewModel.shufflePlayerList()
+                    while (currentPlayer == GameViewModel.playerList.get(0)){
+                        GameViewModel.shufflePlayerList()
+                    }
+                    println(GameViewModel.playerList)
+                    GameViewModel.currentRound = GameViewModel.currentRound + 1
+                }
+
+                Toast(this).apply{
+                    toastLayout.player_guess_label.text = GameViewModel.playerList.get(currentScore)
+                    duration = Toast.LENGTH_LONG
+                    setGravity(Gravity.CENTER, 0,0)
+                    view = toastLayout
+
+                }.show()
+
+
+                val intent = PartySpeechToText.newIntent(this@PartyAnswerResult, currentScore, currentWord)
+                startActivity(intent)
+
+                clockPlayer.stop()
+                clockPlayer.release()
+
+                finish()
+
+
+
             }
-            else{
-                intent = SpeechToText.newIntent(this@AnswerResult, currentScore)
-            }
-
-
-            startActivity(intent)
-            clockPlayer.stop()
-            clockPlayer.release()
-            finish()
         }
 
     }
@@ -104,7 +152,7 @@ class AnswerResult : AppCompatActivity() {
             songArtist: String,
             currentScore: Int
         ): Intent {
-            return Intent(packageContext, AnswerResult::class.java).apply {
+            return Intent(packageContext, PartyAnswerResult::class.java).apply {
                 putExtra(GET_GUESS_FOR_SONG, songGuess)
                 putExtra(GET_LYRICS_FOR_SONG, songLyrics)
                 putExtra(GET_TITLE_FOR_SONG, songTitle)
@@ -129,12 +177,14 @@ class AnswerResult : AppCompatActivity() {
             println("3Got herelololollo")
             println("Trying to fetch JSON")
 
+
             var stringFirstArtist = intent.getStringExtra(
                 GET_ARTIST_FOR_SONG
             ).split("&")[0]
 
             val url =
                 "https://www.theaudiodb.com/api/v1/json/1/search.php?s=" + stringFirstArtist
+
 
             val request = Request.Builder().url(url).build()
 
@@ -189,4 +239,3 @@ class AnswerResult : AppCompatActivity() {
 
 }
 
-class ArtistInfo(val artists: List<Artist>)

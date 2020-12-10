@@ -26,6 +26,11 @@
         </activity>
         <activity android:name=".AnswerResult"></activity>
         <activity android:name=".EndGame"></activity>
+        <activity android:name=".CreateParty"></activity>
+        <activity android:name=".PartySpeechToText"></activity>
+        <activity android:name=".PartyAnswerResult"></activity>
+        <activity android:name=".HolidaySpeechToText"></activity>
+        <activity android:name=".PlayerLost"></activity>
     </application>
 
 </manifest>

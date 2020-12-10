@@ -67,11 +67,17 @@
         android:id="@+id/toggleGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:layout_gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/instructions_button">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
 
         <ToggleButton
             android:id="@+id/easy_button"
@@ -81,8 +87,6 @@
             android:textAllCaps="false"
             android:checked="true"
             android:fontFamily="@font/fredokaone"
-            android:onClick="onToggle"
-
             android:textOff="EASY"
             android:textOn="EASY"
             android:textSize="18dp" />
@@ -93,7 +97,7 @@
             android:layout_height="45dp"
             android:layout_margin="3dp"
             android:fontFamily="@font/fredokaone"
-            android:onClick="onToggle"
+
             android:textAllCaps="false"
             android:textOff="MEDIUM"
             android:textOn="MEDIUM"
@@ -105,12 +109,62 @@
             android:layout_height="45dp"
             android:layout_margin="3dp"
             android:fontFamily="@font/fredokaone"
-            android:onClick="onToggle"
+
             android:textAllCaps="false"
             android:textOff="HARD"
             android:textOn="HARD"
             android:textSize="18dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+
+            >
+            <ToggleButton
+                android:id="@+id/holiday_button"
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="3dp"
+                android:textAllCaps="false"
+                android:fontFamily="@font/fredokaone"
+
+
+                android:textOff="HOLIDAY"
+                android:textOn="HOLIDAY"
+                android:textSize="18dp" />
+
+            <ToggleButton
+                android:id="@+id/party_button"
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="6dp"
+                android:fontFamily="@font/fredokaone"
+
+                android:textAllCaps="false"
+                android:textOff="PARTY MODE"
+                android:textOn="PARTY MODE"
+                android:textSize="18dp" />
+
+
+
+        </LinearLayout>
+
+
+
+
     </RadioGroup>
+
 
     <TextView
         android:id="@+id/difficulty_info"
